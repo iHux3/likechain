@@ -1,0 +1,8 @@
+{
+  "name": "likechain",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "eth-gas-reporter": "^0.2.20"
+  }
+}
