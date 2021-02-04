@@ -10,7 +10,7 @@ contract LikeToken is ERC20 {
     constructor() ERC20('LikeToken', 'LIKE') 
     {
         admin = msg.sender;
-        _mint(msg.sender, 10000);
+        _mint(msg.sender, 10000 ether);
     }
 
     function setAdmin(address _admin) external onlyAdmin
@@ -25,7 +25,7 @@ contract LikeToken is ERC20 {
 
     modifier onlyAdmin()
     {
-        require(msg.sender == admin, 'admin only');
+        require(msg.sender == admin, 'NO_ADMIN');
         _;
     }
 }
