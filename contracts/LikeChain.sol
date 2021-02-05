@@ -10,16 +10,15 @@ contract LikeChain
     using SafeMath for uint;
 
     uint public constant YIELD_PERCENT = 10 ** 15;
+    uint public constant YIELD_INTERVAL = 1 days;
     uint public imageId;
     uint public totalLikes;
 
     LikeToken likeToken;
-    address[] userArray;
     mapping(address => User) users;
     mapping(uint => Image) images;
 
     struct User {
-        bool created;
         uint likedTimestamps;
         uint likedCount;
         uint[] images;
@@ -43,13 +42,11 @@ contract LikeChain
         require(bytes(_IPFShash).length <= 50, 'IPFSHASH_LENGTH_OVERFLOW');
         require(bytes(_description).length <= 100, 'DESCRIPTION_LENGTH_OVERFLOW');
 
-        _createUser();
         _createImage(_IPFShash, _description);
     }
 
     function likeImage(uint _imageId) external
     {
-        _createUser();
         _like(_imageId, 1 ether);
     }
 
@@ -60,7 +57,7 @@ contract LikeChain
         if (yield == 0 && avg != 0) revert('NO_YIELD');
 
         User storage user = users[msg.sender];
-        uint remainder = block.timestamp.sub(avg) % 1 days;
+        uint remainder = block.timestamp.sub(avg) % YIELD_INTERVAL;
         user.likedTimestamps = user.likedCount * (block.timestamp - remainder);
         likeToken.mint(msg.sender, yield);
     }
@@ -70,22 +67,13 @@ contract LikeChain
         User storage user = users[msg.sender];
         if (user.likedCount > 0) {
             uint avg = user.likedTimestamps.div(user.likedCount);
-            uint daysCount = block.timestamp.sub(avg).div(1 days);
+            uint daysCount = block.timestamp.sub(avg).div(YIELD_INTERVAL);
             uint yield = daysCount > 0 ? user.likedCount * YIELD_PERCENT ** daysCount : 0;
             return (yield, avg);
         } else {
             return (0, 0);
         }
     }
-
-    function _createUser() private
-    {
-        if (users[msg.sender].created == false) {
-            userArray.push(msg.sender);
-            users[msg.sender].created = true;
-        }
-    }
-
     function _createImage(string calldata _IPFShash, string calldata _description) private
     {
         users[msg.sender].images.push(imageId);
