@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.7.6;
-pragma abicoder v2;
 
 import './LikeToken.sol';
 import '@openzeppelin/contracts/math/SafeMath.sol';
@@ -10,8 +9,8 @@ contract LikeChain
 {
     using SafeMath for uint;
 
-    uint constant YIELD_PERCENT = 10 ** 15;
-    uint constant YIELD_INTERVAL = 1 days;
+    uint constant YIELD_PERCENT = 1001000000; //1.001%
+    uint constant YIELD_INTERVAL = 15 seconds;
     uint constant LIKE_VALUE = 1 ether;
     uint public imageId;
 
@@ -63,6 +62,7 @@ contract LikeChain
 
     function likeImage(uint _imageId) external
     {
+        require(_imageId < imageId, 'NO_ID_IMAGE');
         require(likeToken.balanceOf(msg.sender) >= LIKE_VALUE, 'NO_TOKEN_BALANCE');
         require(likeToken.allowance(msg.sender, address(this)) >= LIKE_VALUE, 'NO_TOKEN_ALLOWANCE');
         require(users[msg.sender].liked[_imageId] == false, 'IMAGE_LIKED');
@@ -92,9 +92,32 @@ contract LikeChain
         User storage user = users[msg.sender];
         if (user.likedCount > 0) {
             uint avg = user.likedTimestamps.div(user.likedCount);
-            uint daysCount = block.timestamp.sub(avg).div(YIELD_INTERVAL);
-            uint yield = daysCount > 0 ? user.likedCount * YIELD_PERCENT ** daysCount : 0;
-            return (yield, avg);
+            uint intervalCount = block.timestamp.sub(avg).div(YIELD_INTERVAL);
+            uint yield = 0;
+            uint base = 1 ether;
+            uint divisor = 10 ** 9;
+            uint interval = 8;
+            if (intervalCount > 0) {
+                if (intervalCount >= 2) {
+                    yield = base;
+                    for (uint i = 0; i < intervalCount.div(interval); i++) {
+                        yield *= (YIELD_PERCENT ** interval).div(divisor ** (interval - 2));
+                        yield = yield.div(base);
+                    }
+                    uint remainder = intervalCount % interval;
+                    if (remainder >= 2) {
+                        yield *= (YIELD_PERCENT ** remainder).div(divisor ** (remainder - 2));
+                    } else if (remainder == 1) {
+                        yield *= YIELD_PERCENT ** remainder * divisor;
+                    }
+                    yield = yield.div(base);
+                } else if (intervalCount == 1) {
+                    yield = YIELD_PERCENT ** intervalCount * divisor;
+                }
+                yield *= user.likedCount;
+                yield -= user.likedCount * base;
+            }
+            return (yield, intervalCount);
         } else {
             return (0, 0);
         }
