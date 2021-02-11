@@ -48,7 +48,7 @@ class App extends Component {
                 {this.state.contract &&
                     <Switch>
                         <Route exact path="/">
-                            <UploadImage contract={this.state.contract}/>
+                            <UploadImage account={this.state.account} contract={this.state.contract}/>
                         </Route>
                         <Route path="/:address/farm">
                             farm

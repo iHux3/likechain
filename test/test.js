@@ -85,7 +85,9 @@ async function likeImage(imageId, account) {
     await likeToken.approve(likeChain.address, value);
     await likeChain.likeImage(imageId);
     const authorBalance = await likeToken.balanceOf(account);
-    assert.equal(authorBalance, value, 'wrong author balance');
+    const topImage = await likeChain.topImages(imageId);
+    assert.equal(topImage, imageId, 'wrong top image');
+    assert.equal(authorBalance, value - 10**17, 'wrong author balance');
 }
 
 async function testWithdrawal(accounts, intervalCount, expectedBalance) {

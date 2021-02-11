@@ -22,9 +22,11 @@ class UploadImage extends Component {
     {
         const contract = this.props.contract;
         const imageId = await contract.methods.imageId().call();
-        for (let i = 0; i <= imageId; i++){
-
+        console.log(Date.now());
+        for (let i = 0; i <= 1000; i++){
+            const imageId = await contract.methods.imageId().call();
         }
+        console.log(Date.now());
         const images = null;
         console.log(imageId);
         this.setState({ imageId, images, loaded: true });
@@ -47,11 +49,17 @@ class UploadImage extends Component {
     async submit(e)
     {
         e.preventDefault();
-        console.log($("#input-description").val());
 
         if (this.state.imageBuffer) {
+            const description = $("#input-description").val();
             const res = await ipfs.add(this.state.imageBuffer);
             console.log(res);
+            try {
+                await this.props.contract.methods.uploadImage(description, res.path).send({ from: this.props.account });
+                console.log("DONE")
+            } catch (e) {
+                console.log(e);
+            }
         }
     }
 

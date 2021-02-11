@@ -23,6 +23,11 @@ contract LikeToken is ERC20 {
         _mint(_receiver, _amount);
     }
 
+    function burn(address _receiver, uint _amount) external onlyAdmin
+    {
+        _burn(_receiver, _amount);
+    }
+
     modifier onlyAdmin()
     {
         require(msg.sender == admin, 'NO_ADMIN');

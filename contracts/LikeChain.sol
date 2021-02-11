@@ -12,11 +12,14 @@ contract LikeChain
     uint constant YIELD_PERCENT = 1001000000; //1.001%
     uint constant YIELD_INTERVAL = 15 seconds;
     uint constant LIKE_VALUE = 1 ether;
+    uint constant FEE = 10 ** 17;
     uint public imageId;
 
     LikeToken likeToken;
     mapping(address => User) public users;
     mapping(uint => Image) public images;
+    uint[] public topImages;
+    uint topImagesMinimum;
 
     struct User {
         uint likedTimestamps;
@@ -67,12 +70,38 @@ contract LikeChain
         require(likeToken.allowance(msg.sender, address(this)) >= LIKE_VALUE, 'NO_TOKEN_ALLOWANCE');
         require(users[msg.sender].liked[_imageId] == false, 'IMAGE_LIKED');
 
-        likeToken.transferFrom(msg.sender, images[_imageId].author, LIKE_VALUE);
+        likeToken.transferFrom(msg.sender, images[_imageId].author, LIKE_VALUE.sub(FEE));
+        likeToken.burn(msg.sender, FEE);
+
         users[msg.sender].liked[_imageId] = true;
         users[msg.sender].likedCount++;
         users[msg.sender].likedTimestamps += block.timestamp;
         images[_imageId].likes.push(msg.sender);
+        
         emit ImageLiked(_imageId, msg.sender);
+        _updateTopImages(_imageId);
+    }
+
+    function _updateTopImages(uint _imageId) private 
+    {
+        if (topImages.length < 10) {
+            topImages.push(_imageId);
+        } else {
+            uint likes = images[_imageId].likes.length;
+            if (likes >= topImagesMinimum) {
+                uint min = images[topImages[0]].likes.length;
+                uint minIndex;
+                for (uint i = 1; i < topImages.length; i++) {
+                    uint currentLikes = images[topImages[i]].likes.length;
+                    if (currentLikes < min) {
+                        min = currentLikes;
+                        minIndex = i;
+                    }
+                }
+                topImages[minIndex] = _imageId;
+                topImagesMinimum = min;
+            }
+        }
     }
 
     function withdrawYield() external
