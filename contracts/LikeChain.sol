@@ -35,7 +35,7 @@ contract LikeChain
         address[] likes;
     }
 
-    event ImageCreated (
+    event ImageUploaded (
         uint id,
         address author,
         string IPFShash,
@@ -54,12 +54,12 @@ contract LikeChain
 
     function uploadImage(string calldata _IPFShash, string calldata _description) external
     {
-        require(bytes(_IPFShash).length <= 50, 'IPFSHASH_LENGTH_OVERFLOW');
-        require(bytes(_description).length <= 100, 'DESCRIPTION_LENGTH_OVERFLOW');
+        require(bytes(_IPFShash).length <= 60, 'IPFSHASH_LENGTH_OVERFLOW');
+        require(bytes(_description).length <= 80, 'DESCRIPTION_LENGTH_OVERFLOW');
 
         users[msg.sender].images.push(imageId);
         images[imageId] = Image(msg.sender, _IPFShash, _description, new address[](0));
-        emit ImageCreated(imageId, msg.sender, _IPFShash, _description);
+        emit ImageUploaded(imageId, msg.sender, _IPFShash, _description);
         imageId++;
     }
 

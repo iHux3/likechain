@@ -18,18 +18,18 @@ class Header extends Component {
                         <div className="col-10 text-right">
                             <ul className="list-inline">
                                 <li className="list-inline-item">
-                                    <Link to={`/${this.props.account}`}>
+                                    <Link to={`/upload`}>
+                                        Upload
+                                    </Link>
+                                </li>
+                                <li className="list-inline-item">
+                                    <Link to={`/images/${this.props.account || ''}`}>
                                         Images
                                     </Link>
                                 </li>
                                 <li className="list-inline-item">
-                                    <Link to={`/${this.props.account}/farm`}>
+                                    <Link to={`/farm/${this.props.account || ''}`}>
                                         Farm
-                                    </Link>
-                                </li>
-                                <li className="list-inline-item">
-                                    <Link to={`/about`}>
-                                        About
                                     </Link>
                                 </li>
                             </ul>
