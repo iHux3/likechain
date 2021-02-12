@@ -17,7 +17,7 @@ contract(LikeChain, (accounts) => {
     it('image upload reverts with too long hash', async() => {
         const likeChain = await LikeChain.deployed();
         let hash;
-        for (let i = 0; i < 51; i++) hash += 'a';
+        for (let i = 0; i < 61; i++) hash += 'a';
         await reverts(likeChain.uploadImage, hash, 'desc');
     });
 

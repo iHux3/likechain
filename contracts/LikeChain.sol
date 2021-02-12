@@ -32,7 +32,7 @@ contract LikeChain
         address author;
         string IPFShash;
         string description;
-        address[] likes;
+        uint likes;
     }
 
     event ImageUploaded (
@@ -58,7 +58,7 @@ contract LikeChain
         require(bytes(_description).length <= 80, 'DESCRIPTION_LENGTH_OVERFLOW');
 
         users[msg.sender].images.push(imageId);
-        images[imageId] = Image(msg.sender, _IPFShash, _description, new address[](0));
+        images[imageId] = Image(msg.sender, _IPFShash, _description, 0);
         emit ImageUploaded(imageId, msg.sender, _IPFShash, _description);
         imageId++;
     }
@@ -76,7 +76,7 @@ contract LikeChain
         users[msg.sender].liked[_imageId] = true;
         users[msg.sender].likedCount++;
         users[msg.sender].likedTimestamps += block.timestamp;
-        images[_imageId].likes.push(msg.sender);
+        images[_imageId].likes++;
         
         emit ImageLiked(_imageId, msg.sender);
         _updateTopImages(_imageId);
@@ -87,12 +87,12 @@ contract LikeChain
         if (topImages.length < 10) {
             topImages.push(_imageId);
         } else {
-            uint likes = images[_imageId].likes.length;
+            uint likes = images[_imageId].likes;
             if (likes >= topImagesMinimum) {
-                uint min = images[topImages[0]].likes.length;
+                uint min = images[topImages[0]].likes;
                 uint minIndex;
                 for (uint i = 1; i < topImages.length; i++) {
-                    uint currentLikes = images[topImages[i]].likes.length;
+                    uint currentLikes = images[topImages[i]].likes;
                     if (currentLikes < min) {
                         min = currentLikes;
                         minIndex = i;
