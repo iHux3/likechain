@@ -62,12 +62,8 @@ class App extends Component {
                 {!this.state.loading &&
                     (this.state.contract._address && this.state.account ? 
                         <Switch>
-                            <Route exact path="/">
-                                <Homepage account={this.state.account} contract={this.state.contract} token={this.state.token}/>
-                            </Route>
-                            <Route path="/upload">
-                                <UploadImage account={this.state.account} contract={this.state.contract}/>
-                            </Route>
+                            <Route exact path="/" render={(props) => <Homepage account={this.state.account} contract={this.state.contract} token={this.state.token}/>}/>
+                            <Route path="/upload" render={(props) => <UploadImage account={this.state.account} contract={this.state.contract}/>}/>
                             <Route path="/images/:address">
                                 images
                             </Route>

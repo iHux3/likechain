@@ -151,4 +151,8 @@ contract LikeChain
             return (0, 0);
         }
     }
+
+    function isLiked(uint _imageId) public view returns(bool) {
+        return users[msg.sender].liked[_imageId];
+    }
 }

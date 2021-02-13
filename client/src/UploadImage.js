@@ -7,7 +7,8 @@ const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'http'
 class UploadImage extends Component {
     state = {
         fileName: "no file",
-        imageBuffer: null
+        imageBuffer: null,
+        processing: false
     }
 
     constructor(props) 
@@ -35,14 +36,18 @@ class UploadImage extends Component {
     {
         e.preventDefault();
 
-        if (this.state.imageBuffer) {
+        if (!this.state.processing && this.state.imageBuffer) {
+            this.setState({ processing: true });
             const description = $("#input-description").val();
             const res = await ipfs.add(this.state.imageBuffer);
             try {
                 await this.props.contract.methods.uploadImage(res.path, description).send({ from: this.props.account });
+                $("#input-description").val("");
+                this.setState({ imageBuffer: null, fileName: "no file" });
             } catch (e) {
                 console.log(e);
             }
+            this.setState({ processing: false });
         }
     }
 
@@ -64,10 +69,17 @@ class UploadImage extends Component {
                                 <div className="h5"> Image description: </div>
                                 <textarea className="form-control" rows="3" maxLength="100" id="input-description" type="text"></textarea>
                             </div>
-                            <label id="upload-button" className="button w-100 text-center">
-                                UPLOAD IMAGE
-                                <input type="submit"/>
-                            </label>
+                            {!this.state.processing ?
+                                <label id="upload-button" className={"button w-100 text-center" + (!this.state.imageBuffer && " disabled")}>
+                                    UPLOAD IMAGE
+                                    <input type="submit"/>
+                                </label>
+                            :
+                                <label id="upload-button" className="button w-100 text-center">
+                                    <div className="loader"></div>
+                                    <input type="submit"/>
+                                </label>
+                            }
                         </form>
                     </div>
                 </div>
