@@ -13,7 +13,6 @@ class Homepage extends Component {
         const contract = this.props.contract;
         const imageId = await contract.methods.imageId().call();
         const image = await contract.methods.images(0).call();
-        console.log(image);
         this.state.images.push(<Image key={0} hash={image.IPFShash} description={image.description} author={image.author} likes={0} account={this.props.account} contract={this.props.contract} token={this.props.token}/>);
         this.setState({ imageId, loaded: true });
         /*contract.events.ImageUploaded().on('data', async (event) => {

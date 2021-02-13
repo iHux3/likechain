@@ -16,11 +16,16 @@ class App extends Component {
         account: null,
         network: null,
         contract: null,
-        token: null
+        token: null,
+        loading: true
     }
 
-    async componentDidMount()
+    componentDidMount()
     {
+        this.connect();
+    };
+
+    async connect() {
         try {
             window.ethereum.enable();
             const web3 = await new Web3(window.ethereum);
@@ -31,7 +36,7 @@ class App extends Component {
             const deployedNetworkToken = LikeToken.networks[network];
             const contract = new web3.eth.Contract(LikeChain.abi, deployedNetwork && deployedNetwork.address);
             const token = new web3.eth.Contract(LikeToken.abi, deployedNetworkToken && deployedNetworkToken.address);
-            this.setState({ web3, account, network, contract, token });
+            this.setState({ web3, account, network, contract, token, loading: false });
         } catch (e) {
             console.log(e);
             alert(`Failed to load web3, accounts, or contract`);
@@ -40,31 +45,52 @@ class App extends Component {
         window.ethereum.on("accountsChanged", accounts => {
             this.setState({ account: accounts[0] });
         });
-        window.ethereum.on("networkChanged", networkId => {
-            this.setState({ network: networkId });
+        window.ethereum.on("networkChanged", network => {
+            const deployedNetwork = LikeChain.networks[network];
+            const deployedNetworkToken = LikeToken.networks[network];
+            const contract = new this.state.web3.eth.Contract(LikeChain.abi, deployedNetwork && deployedNetwork.address);
+            const token = new this.state.web3.eth.Contract(LikeToken.abi, deployedNetworkToken && deployedNetworkToken.address);
+            this.setState({ network, contract, token });
         });
-    };
+    }
 
     render() 
     {
         return (
             <Router>
                 <Header account={this.state.account}/>
-                {this.state.contract &&
-                    <Switch>
-                        <Route exact path="/">
-                            <Homepage account={this.state.account} contract={this.state.contract} token={this.state.token}/>
-                        </Route>
-                        <Route path="/upload">
-                            <UploadImage account={this.state.account} contract={this.state.contract}/>
-                        </Route>
-                        <Route path="/images/:address">
-                            images
-                        </Route>
-                        <Route path="/farm/:address">
-                            farm
-                        </Route>
-                    </Switch>
+                {!this.state.loading &&
+                    (this.state.contract._address && this.state.account ? 
+                        <Switch>
+                            <Route exact path="/">
+                                <Homepage account={this.state.account} contract={this.state.contract} token={this.state.token}/>
+                            </Route>
+                            <Route path="/upload">
+                                <UploadImage account={this.state.account} contract={this.state.contract}/>
+                            </Route>
+                            <Route path="/images/:address">
+                                images
+                            </Route>
+                            <Route path="/farm/:address">
+                                farm
+                            </Route>
+                        </Switch>
+                    :
+                        <div className="error-page"> 
+                            {this.state.account ? 
+                                <h2> PLEASE CHOOSE THE CORRECT NETWORK IN YOUR METAMASK WALLET </h2>
+                            :
+                                <div>
+                                    <h2>
+                                        PLEASE CONNECT YOUR METAMASK WALLET FIRST
+                                    </h2> 
+                                    <button className="connect button" onClick={async (e) => this.connect()}>
+                                        CONNECT
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    )
                 }
             </Router>
         );
