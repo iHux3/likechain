@@ -18,8 +18,11 @@ contract LikeChain
     LikeToken likeToken;
     mapping(address => User) public users;
     mapping(uint => Image) public images;
-    uint[] public topImages;
+
     uint topImagesMinimum;
+    uint currentRecentlyLiked;
+    uint[] topImages;
+    uint[] recentlyLiked;
 
     struct User {
         uint likedTimestamps;
@@ -80,6 +83,19 @@ contract LikeChain
         
         emit ImageLiked(_imageId, msg.sender);
         _updateTopImages(_imageId);
+        _updateRecentlyLiked(_imageId);
+    }
+
+    function withdrawYield() external
+    {
+        (uint yield, uint avg) = calculateYield();
+        if (yield == 0 && avg == 0) revert('NO_LIKED_IMAGES');
+        if (yield == 0 && avg != 0) revert('NO_YIELD');
+
+        User storage user = users[msg.sender];
+        uint remainder = block.timestamp.sub(avg) % YIELD_INTERVAL;
+        user.likedTimestamps = user.likedCount * (block.timestamp - remainder);
+        likeToken.mint(msg.sender, yield);
     }
 
     function _updateTopImages(uint _imageId) private 
@@ -104,16 +120,13 @@ contract LikeChain
         }
     }
 
-    function withdrawYield() external
+    function _updateRecentlyLiked(uint _imageId) private 
     {
-        (uint yield, uint avg) = calculateYield();
-        if (yield == 0 && avg == 0) revert('NO_LIKED_IMAGES');
-        if (yield == 0 && avg != 0) revert('NO_YIELD');
-
-        User storage user = users[msg.sender];
-        uint remainder = block.timestamp.sub(avg) % YIELD_INTERVAL;
-        user.likedTimestamps = user.likedCount * (block.timestamp - remainder);
-        likeToken.mint(msg.sender, yield);
+        recentlyLiked[currentRecentlyLiked] = _imageId;
+        currentRecentlyLiked++;
+        if (currentRecentlyLiked > 9) {
+            currentRecentlyLiked = 0;
+        }
     }
 
     function calculateYield() public view returns(uint, uint) 
@@ -152,7 +165,18 @@ contract LikeChain
         }
     }
 
-    function isLiked(uint _imageId) public view returns(bool) {
+    function isLiked(uint _imageId) public view returns(bool) 
+    {
         return users[msg.sender].liked[_imageId];
+    }
+
+    function getTopImages() public view returns(uint[] memory) 
+    {
+        return topImages;
+    }
+
+    function getRecentlyLiked() public view returns(uint[] memory) 
+    {
+        return recentlyLiked;
     }
 }

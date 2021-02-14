@@ -16,20 +16,23 @@ class Image extends Component {
     {
         const isLiked = await this.props.contract.methods.isLiked(1).call();
         this.setState({ isLiked });
+        
+        /*contract.events.ImageUploaded().on('data', async (event) => {
+            console.log(event.returnValues);
+        });*/
     }
 
     async likeImage(e)
     {
-        if (e.currentTarget.className == "enabled" && !this.state.processing) {
+        if (e.currentTarget.className === "enabled" && !this.state.processing) {
             try {
                 this.state.processing = true;
                 await this.props.token.methods.approve(this.props.contract._address, (10 ** 18).toString()).send({ from: this.props.account });
                 await this.props.contract.methods.likeImage(0).send({ from: this.props.account });
             } catch (e) {
-                this.state.processing = false;
             }
+            this.state.processing = false;
         }
-        this.state.processing = false;
     }
 
     render() 
