@@ -25,8 +25,8 @@ class Image extends Component {
     async likeImage(e)
     {
         if (e.currentTarget.className === "enabled" && !this.state.processing) {
+            this.state.processing = true;
             try {
-                this.state.processing = true;
                 await this.props.token.methods.approve(this.props.contract._address, (10 ** 18).toString()).send({ from: this.props.account });
                 await this.props.contract.methods.likeImage(0).send({ from: this.props.account });
             } catch (e) {

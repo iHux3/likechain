@@ -81,9 +81,9 @@ contract LikeChain
         users[msg.sender].likedTimestamps += block.timestamp;
         images[_imageId].likes++;
         
-        emit ImageLiked(_imageId, msg.sender);
         _updateTopImages(_imageId);
         _updateRecentlyLiked(_imageId);
+        emit ImageLiked(_imageId, msg.sender);
     }
 
     function withdrawYield() external
@@ -122,10 +122,14 @@ contract LikeChain
 
     function _updateRecentlyLiked(uint _imageId) private 
     {
-        recentlyLiked[currentRecentlyLiked] = _imageId;
-        currentRecentlyLiked++;
-        if (currentRecentlyLiked > 9) {
-            currentRecentlyLiked = 0;
+        if (recentlyLiked.length < 10) {
+            recentlyLiked.push(_imageId);
+        } else {
+            recentlyLiked[currentRecentlyLiked] = _imageId;
+            currentRecentlyLiked++;
+            if (currentRecentlyLiked > 9) {
+                currentRecentlyLiked = 0;
+            }
         }
     }
 
