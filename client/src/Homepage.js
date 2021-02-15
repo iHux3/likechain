@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Image from "./Image.js";
 import Category from "./Category.js";
 
 class Homepage extends Component {
@@ -27,7 +26,8 @@ class Homepage extends Component {
 
     async getRecentlyLiked()
     {
-        const images = await  this.props.contract.methods.getRecentlyLiked().call();
+        const _images = await  this.props.contract.methods.getRecentlyLiked().call();
+        const images = _images ? [..._images] : [];
         const selectedIds = [];
         while (images.length > 0 && selectedIds.length < this.state.imageCount) {
             const index = Math.floor(Math.random() * images.length);
@@ -51,7 +51,8 @@ class Homepage extends Component {
 
     async getTopImages()
     {
-        const images = await this.props.contract.methods.getTopImages().call();
+        const _images = await this.props.contract.methods.getTopImages().call();
+        const images = _images ? [..._images] : [];
         const selectedIds = [];
         while (images.length > 0 && selectedIds.length < this.state.imageCount) {
             const index = Math.floor(Math.random() * images.length);
@@ -88,8 +89,9 @@ class Homepage extends Component {
     async loadImage(selected, id)
     {
         const image = await this.props.contract.methods.images(id).call();
-        selected.push(<Image key={id} data={image} account={this.props.account} 
-            contract={this.props.contract} token={this.props.token}/>);
+        image.id = id;
+        image.isLiked = await this.props.contract.methods.isLiked(id).call();
+        selected.push(image);
     }
 
     async loadImages(selectedIds, key)
@@ -108,10 +110,14 @@ class Homepage extends Component {
         } else {
             return (
                 <div id="homepage" className="container">
-                    <Category images={this.state.images.recentlyLiked} text={"RECENTLY LIKED"} />
-                    <Category images={this.state.images.recentlyAdded} text={"RECENTLY ADDED"} />
-                    <Category images={this.state.images.mostLiked} text={"MOST LIKED"} />
-                    <Category images={this.state.images.random} text={"RANDOM"} />
+                    <Category images={this.state.images.recentlyLiked} text={"RECENTLY LIKED"} contract={this.props.contract} 
+                        token={this.props.token} account={this.props.account} />
+                    <Category images={this.state.images.recentlyAdded} text={"RECENTLY ADDED"} contract={this.props.contract} 
+                        token={this.props.token} account={this.props.account} />
+                    <Category images={this.state.images.mostLiked} text={"MOST LIKED"} contract={this.props.contract} 
+                        token={this.props.token} account={this.props.account}/>
+                    <Category images={this.state.images.random} text={"RANDOM"} contract={this.props.contract} 
+                        token={this.props.token} account={this.props.account}/>
                 </div>
             );
         }

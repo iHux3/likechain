@@ -183,4 +183,9 @@ contract LikeChain
     {
         return recentlyLiked;
     }
+
+    function getUserImages(address _user) public view returns(uint[] memory) 
+    {
+        return users[_user].images;
+    }
 }

@@ -54,7 +54,11 @@ class UploadImage extends Component {
     render() 
     {
         return (
-            <div className="container">
+            <div className="container main">
+                <h1 className="h1-title center"> 
+                    <span> UPLOAD IMAGE </span>
+                    <hr></hr>
+                </h1>
                 <div id="upload-image" className="row align-items-center justify-content-center">
                     <div className="text-center">
                         <form onSubmit={this.submit} className="text-left">
@@ -63,7 +67,7 @@ class UploadImage extends Component {
                                     CHOOSE IMAGE
                                     <input type="file" accept=".jpg, .png, .jpeg, .gif" onChange={this.chooseImage}/>
                                 </label>
-                                <span id="image-chosen"> {this.state.fileName} </span>
+                                <span title={this.state.fileName} id="image-chosen"> {this.state.fileName} </span>
                             </div>
                             <div id="image-description">
                                 <div className="h5"> Image description: </div>

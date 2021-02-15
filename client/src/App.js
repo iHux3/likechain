@@ -6,6 +6,8 @@ import Web3 from "web3";
 import Header from "./Header.js";
 import UploadImage from "./UploadImage.js";
 import Homepage from "./Homepage.js";
+import Images from "./Images.js";
+import Farm from "./Farm.js";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
@@ -62,14 +64,16 @@ class App extends Component {
                 {!this.state.loading &&
                     (this.state.contract._address && this.state.account ? 
                         <Switch>
-                            <Route exact path="/" render={(props) => <Homepage account={this.state.account} contract={this.state.contract} token={this.state.token}/>}/>
+                            <Route exact path="/" render={(props) => <Homepage account={this.state.account} contract={this.state.contract} 
+                            token={this.state.token}/>}/>
+
                             <Route path="/upload" render={(props) => <UploadImage account={this.state.account} contract={this.state.contract}/>}/>
-                            <Route path="/images/:address">
-                                images
-                            </Route>
-                            <Route path="/farm/:address">
-                                farm
-                            </Route>
+
+                            <Route path="/images/:address?" render={(props) => <Images web3={this.state.web3} history={props.history} account={this.state.account} 
+                            contract={this.state.contract} token={this.state.token}/>}/>
+
+                            <Route path="/farm/:address?" render={(props) => <Farm account={this.state.account} contract={this.state.contract} 
+                            token={this.state.token}/>}/>
                         </Switch>
                     :
                         <div className="error-page"> 

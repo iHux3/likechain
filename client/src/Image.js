@@ -4,7 +4,6 @@ import { Link }  from "react-router-dom";
 class Image extends Component {
     state = {
         processing: false,
-        isLiked: false
     }
 
     constructor(props) {
@@ -12,26 +11,16 @@ class Image extends Component {
         this.likeImage = this.likeImage.bind(this);
     }
 
-    async componentDidMount()
-    {
-        const isLiked = await this.props.contract.methods.isLiked(1).call();
-        this.setState({ isLiked });
-        
-        /*contract.events.ImageUploaded().on('data', async (event) => {
-            console.log(event.returnValues);
-        });*/
-    }
-
     async likeImage(e)
     {
         if (e.currentTarget.className === "enabled" && !this.state.processing) {
-            this.state.processing = true;
+            this.setState({ processing: true });
             try {
                 await this.props.token.methods.approve(this.props.contract._address, (10 ** 18).toString()).send({ from: this.props.account });
                 await this.props.contract.methods.likeImage(0).send({ from: this.props.account });
             } catch (e) {
             }
-            this.state.processing = false;
+            this.setState({ processing: false });
         }
     }
 
@@ -49,7 +38,7 @@ class Image extends Component {
                         </div>
                     </div>
                     <div className="image-info-right">
-                        <span className={!this.state.isLiked ? "enabled" : "disabled"} onClick={this.likeImage}>
+                        <span className={!data.isLiked ? "enabled" : "disabled"} onClick={this.likeImage}>
                             &#10084;
                         </span>
                         <span className="likes">
