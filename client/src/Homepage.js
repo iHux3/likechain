@@ -109,7 +109,7 @@ class Homepage extends Component {
             );
         } else {
             return (
-                <div id="homepage" className="container">
+                <div id="homepage" className="container main">
                     <Category images={this.state.images.recentlyLiked} text={"RECENTLY LIKED"} contract={this.props.contract} 
                         token={this.props.token} account={this.props.account} />
                     <Category images={this.state.images.recentlyAdded} text={"RECENTLY ADDED"} contract={this.props.contract} 

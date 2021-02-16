@@ -259,11 +259,6 @@ textarea.form-control:focus {
 }
 
 /* homepage */
-
-#homepage {
-    margin-top: 50px;
-}
-
 .images {
     padding-left: 20px;
     margin-bottom: 40px;
@@ -301,11 +296,11 @@ textarea.form-control:focus {
 
 /* iamges page */
 
-#images h1 {
+#images h1, #farm h1 {
     margin-bottom: 20px;
 }
 
-#images-top {
+#images-top, #farm-top {
     height: 180px;
 }
 

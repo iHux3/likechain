@@ -81,11 +81,11 @@ class Images extends Component {
                             SHOW
                         </Link>
                         {!this.state.validAddress &&
-                            <div className="form-info"> please enter the correct address </div>
+                            <div className="form-info"> please enter a valid address </div>
                         }
                     </form>
                 </div>
-                <div id="images-bottom" className="row justify-content-center">
+                <div className="row justify-content-center">
                     {images}
                 </div>
             </div>

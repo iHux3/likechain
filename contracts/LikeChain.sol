@@ -88,7 +88,7 @@ contract LikeChain
 
     function withdrawYield() external
     {
-        (uint yield, uint avg) = calculateYield();
+        (uint yield, uint avg) = calculateYield(msg.sender, block.timestamp);
         if (yield == 0 && avg == 0) revert('NO_LIKED_IMAGES');
         if (yield == 0 && avg != 0) revert('NO_YIELD');
 
@@ -133,12 +133,13 @@ contract LikeChain
         }
     }
 
-    function calculateYield() public view returns(uint, uint) 
+    function calculateYield(address _user, uint _timestamp) public view returns(uint, uint) 
     {
-        User storage user = users[msg.sender];
+        User storage user = users[_user];
         if (user.likedCount > 0) {
+            if (_timestamp == 0) _timestamp = block.timestamp;
             uint avg = user.likedTimestamps.div(user.likedCount);
-            uint intervalCount = block.timestamp.sub(avg).div(YIELD_INTERVAL);
+            uint intervalCount = _timestamp.sub(avg).div(YIELD_INTERVAL);
             uint yield = 0;
             uint base = 1 ether;
             uint divisor = 10 ** 9;

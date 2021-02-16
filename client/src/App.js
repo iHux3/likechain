@@ -72,7 +72,7 @@ class App extends Component {
                             <Route path="/images/:address?" render={(props) => <Images web3={this.state.web3} history={props.history} account={this.state.account} 
                             contract={this.state.contract} token={this.state.token}/>}/>
 
-                            <Route path="/farm/:address?" render={(props) => <Farm account={this.state.account} contract={this.state.contract} 
+                            <Route path="/farm/:address?" render={(props) => <Farm web3={this.state.web3} history={props.history} account={this.state.account} contract={this.state.contract} 
                             token={this.state.token}/>}/>
                         </Switch>
                     :

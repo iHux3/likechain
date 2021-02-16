@@ -38,7 +38,7 @@ contract(LikeChain, (accounts) => {
         await likeImage(0, accounts[1]);
     });
 
-    /*it('like image 1', async() => {
+    it('like image 1', async() => {
         await likeImage(1, accounts[2]);
     });
 
@@ -66,7 +66,7 @@ contract(LikeChain, (accounts) => {
 
     it('withdrawing yield after 10 intervals (testing 15s instead of 1 day)', async() => {
         await testWithdrawal(accounts, 10, '22090240420504420');
-    });*/
+    });
 });
 
 async function uploadImage(imageId, account) {
