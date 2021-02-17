@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.7.6;
+pragma abicoder v2;
 
 import './LikeToken.sol';
 import '@openzeppelin/contracts/math/SafeMath.sol';
@@ -147,23 +148,29 @@ contract LikeChain
         }
     }
 
-    function isLiked(uint _imageId) public view returns(bool) 
+    function getTopImages() public view returns(Image[] memory, bool[] memory, uint[] memory) 
     {
-        return users[msg.sender].liked[_imageId];
+        return getImages(topImages);
     }
 
-    function getTopImages() public view returns(uint[] memory) 
+    function getRecentlyLiked() public view returns(Image[] memory, bool[] memory, uint[] memory)
     {
-        return topImages;
+        return getImages(recentlyLiked);
     }
 
-    function getRecentlyLiked() public view returns(uint[] memory) 
+    function getUserImages(address _user) public view returns(Image[] memory, bool[] memory, uint[] memory) 
     {
-        return recentlyLiked;
+        return getImages(users[_user].images);
     }
 
-    function getUserImages(address _user) public view returns(uint[] memory) 
+    function getImages(uint[] memory ids) public view returns(Image[] memory, bool[] memory, uint[] memory)
     {
-        return users[_user].images;
+        Image[] memory imgs = new Image[](ids.length);
+        bool[] memory isLiked = new bool[](ids.length);
+        for (uint i = 0; i < ids.length; i++) {
+            imgs[i] = images[ids[i]];
+            isLiked[i] = users[msg.sender].liked[ids[i]];
+        }
+        return (imgs, isLiked, ids);
     }
 }

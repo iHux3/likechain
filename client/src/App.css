@@ -285,6 +285,7 @@ textarea.form-control:focus {
     padding-right: 0;
     padding-left: 20px;
     color: lightgray;
+    user-select: none;
 }
 
 .h1-title > span.reload:hover {

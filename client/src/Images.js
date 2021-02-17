@@ -62,21 +62,12 @@ class Images extends Component {
         const isAddress = this.props.web3.utils.isAddress(this.state.address);
         if (isAddress) {
             this.setState({ validAddress: true });
-            const imageIds = await this.props.contract.methods.getUserImages(this.state.address).call();
-            const images = [];
-            await Promise.all(imageIds.map(id => this.loadImage(images, id)));
+            const rawImages = await this.props.contract.methods.getUserImages(this.state.address).call();
+            const images = Utils.getImages(rawImages);
             this.setState({ images });
         } else {
             this.setState({ validAddress: false, images: [] });
         }
-    }
-    
-    async loadImage(selected, id)
-    {
-        const image = await this.props.contract.methods.images(id).call();
-        image.id = id;
-        image.isLiked = await this.props.contract.methods.isLiked(id).call();
-        selected.push(image);
     }
     
     handleChange(e)

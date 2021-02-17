@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Category from "./Category.js";
+import Utils from "./Utils.js";
 
 class Homepage extends Component {
     state = {
@@ -60,43 +61,31 @@ class Homepage extends Component {
 
     async getRecentlyLiked(update = false)
     {
-        const _images = await  this.props.contract.methods.getRecentlyLiked().call();
-        const images = _images ? [..._images] : [];
-        const selectedIds = [];
-        while (images.length > 0 && selectedIds.length < this.state.imageCount) {
-            const index = Math.floor(Math.random() * images.length);
-            const id = images[index];
-            images.splice(images.indexOf(id), 1);
-            selectedIds.push(id);
-        }
-        await this.loadImages(selectedIds, "recentlyLiked");
+        const rawImages = await this.props.contract.methods.getRecentlyLiked().call();
+        const images = Utils.getImages(rawImages);
+        this.state.images.recentlyLiked = images;
         if (update) this.forceUpdate();
     }
 
     async getRecentlyAdded(update = false)
     {
-        const imagesTotal = await  this.props.contract.methods.imageId().call();
+        const imagesTotal = await this.props.contract.methods.imageId().call();
         const selectedIds = [];
         for (let i = imagesTotal; i > imagesTotal - this.state.imageCount && i > 0; i--) {
             const id = i - 1;
             selectedIds.push(id);
         }  
-        await this.loadImages(selectedIds, "recentlyAdded");
+        const rawImages = await this.props.contract.methods.getImages(selectedIds).call();
+        const images = Utils.getImages(rawImages);
+        this.state.images.recentlyAdded = images;
         if (update) this.forceUpdate();
     }
 
     async getTopImages(update = false)
     {
-        const _images = await this.props.contract.methods.getTopImages().call();
-        const images = _images ? [..._images] : [];
-        const selectedIds = [];
-        while (images.length > 0 && selectedIds.length < this.state.imageCount) {
-            const index = Math.floor(Math.random() * images.length);
-            const id = images[index];
-            images.splice(images.indexOf(id), 1);
-            selectedIds.push(id);
-        }
-        await this.loadImages(selectedIds, "mostLiked");
+        const rawImages = await this.props.contract.methods.getTopImages().call();
+        const images = Utils.getImages(rawImages);
+        this.state.images.mostLiked = images;
         if (update) this.forceUpdate();
     }
 
@@ -120,23 +109,10 @@ class Homepage extends Component {
                 selectedIds.push(id);
             }
         }
-        await this.loadImages(selectedIds, "random");
+        const rawImages = await this.props.contract.methods.getImages(selectedIds).call();
+        const images = Utils.getImages(rawImages);
+        this.state.images.random = images;
         if (update) this.forceUpdate();
-    }
-
-    async loadImage(selected, id)
-    {
-        const image = await this.props.contract.methods.images(id).call();
-        image.id = id;
-        image.isLiked = await this.props.contract.methods.isLiked(id).call();
-        selected.push(image);
-    }
-
-    async loadImages(selectedIds, key)
-    {
-        const selected = [];
-        await Promise.all(selectedIds.map(id => this.loadImage(selected, id)));
-        this.state.images[key] = selected;
     }
 
     render() 
