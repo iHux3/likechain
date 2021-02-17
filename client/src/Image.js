@@ -17,7 +17,7 @@ class Image extends Component {
             this.setState({ processing: true });
             try {
                 await this.props.token.methods.approve(this.props.contract._address, (10 ** 18).toString()).send({ from: this.props.account });
-                await this.props.contract.methods.likeImage(0).send({ from: this.props.account });
+                await this.props.contract.methods.likeImage(this.props.data.id).send({ from: this.props.account });
             } catch (e) {
             }
             this.setState({ processing: false });

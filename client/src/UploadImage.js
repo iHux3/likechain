@@ -45,7 +45,6 @@ class UploadImage extends Component {
                 $("#input-description").val("");
                 this.setState({ imageBuffer: null, fileName: "no file" });
             } catch (e) {
-                console.log(e);
             }
             this.setState({ processing: false });
         }

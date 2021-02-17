@@ -47,6 +47,7 @@ class App extends Component {
         window.ethereum.on("accountsChanged", accounts => {
             this.setState({ account: accounts[0] });
         });
+
         window.ethereum.on("networkChanged", network => {
             const deployedNetwork = LikeChain.networks[network];
             const deployedNetworkToken = LikeToken.networks[network];

@@ -7,6 +7,8 @@ class Farm extends Component {
         address: "",
         value: "",
         validAddress: true,
+        harvest: false,
+        processing: false,
         data: {}
     }
 
@@ -14,7 +16,9 @@ class Farm extends Component {
     {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.handleClick = this.handleClick.bind(this)
+        this.handleClick = this.handleClick.bind(this);
+        this.harvest = this.harvest.bind(this);
+
         this.state.address = Utils.getParam(1);
         this.state.value = Utils.getParam(1);
 
@@ -46,10 +50,11 @@ class Farm extends Component {
             const user = await this.props.contract.methods.users(address).call();
             this.state.data.totalLikes = user.likedCount;
             const res = await this.props.contract.methods.calculateYield(address, Math.round(Date.now() / 1000)).call();
-            this.state.data.yield = res[0].toString();
+            this.state.data.yield = this.props.web3.utils.fromWei(res[0].toString(), "ether");
+            this.state.harvest = this.props.account == this.state.address && this.state.data.yield > 0 ? true : false;
             this.forceUpdate();
         } else {
-            this.setState({ validAddress: false });
+            this.setState({ validAddress: false, data: {} });
         }
     }
     
@@ -63,6 +68,20 @@ class Farm extends Component {
         if (this.state.value == this.state.address) {
             e.preventDefault();
             this.load();
+        }
+    }
+
+    async harvest(e)
+    {
+        if (this.state.harvest && !this.state.processing) {
+            this.setState({ processing: true });
+            try {
+                await this.props.contract.methods.withdrawYield().send({ from: this.props.account });
+                await this.load();
+            } catch(e) {
+                
+            }
+            this.setState({ processing: false });
         }
     }
 
@@ -85,9 +104,27 @@ class Farm extends Component {
                         }
                     </form>
                 </div>
-                <div className="row justify-content-center">
-                    {this.state.data.yield}
-                </div>
+                {this.state.data.yield &&
+                    <div id="farm-bottom">
+                        <div className="yield">
+                            yield: 
+                            <span> {this.state.data.yield} LIKE </span>
+                        </div>
+                        <div className="totalLikes">
+                            total likes: 
+                            <span> {this.state.data.totalLikes} </span>
+                        </div>
+                        {!this.state.processing ?
+                            <button onClick={this.harvest} id="harvest" className={"button" + (this.state.harvest ? "" : " disabled")}> 
+                                HARVEST 
+                            </button>
+                        :
+                            <button onClick={this.harvest} id="harvest" className={"button" + (this.state.harvest ? "" : " disabled")}> 
+                                <div className="loader"></div>
+                            </button>   
+                        }
+                    </div>
+                }
             </div>
         )
     }

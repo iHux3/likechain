@@ -122,6 +122,7 @@ textarea {
     width: 400px;
     padding: 20px;
     box-shadow: 0px 0px 20px rgb(0, 0, 0);
+    border-radius: 10px;
 }
 
 #choose-image {
@@ -343,4 +344,34 @@ textarea.form-control:focus {
     color: red;
     font-size: 18px;
     padding-left: 10px;
+}
+
+/* farm */
+
+#farm-bottom {
+    width: 400px;
+    margin: auto;
+    text-align: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    box-shadow: 0 0 20px blueviolet;
+    border-radius: 10px;
+}
+
+.yield {
+    color: white;
+    font-size: 20px;
+}
+
+.yield > span {
+    color: lime;
+}
+
+.totalLikes {
+    color: lightgray;
+    font-size: 16px;
+}
+
+#harvest {
+    margin-top: 20px;
 }
