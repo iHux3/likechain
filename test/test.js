@@ -36,10 +36,17 @@ contract(LikeChain, (accounts) => {
 
     it('like image 0', async() => {
         await likeImage(0, accounts[1]);
+        await sleep(15 * 2);
     });
 
     it('like image 1', async() => {
         await likeImage(1, accounts[2]);
+    });
+
+    it('test', async() => {
+        const likeChain = await LikeChain.deployed();
+        await sleep(15 * 2);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
     });
 
     /*it('test', async() => {
@@ -89,7 +96,7 @@ contract(LikeChain, (accounts) => {
     });
 
     it('withdrawing yield after 10 intervals (testing 15s instead of 1 day)', async() => {
-        await testWithdrawal(accounts, 10, '22090240420504420');
+        await testWithdrawal(accounts, 10, '20000000000000000');
     });*/
 });
 

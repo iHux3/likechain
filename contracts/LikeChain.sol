@@ -9,7 +9,7 @@ contract LikeChain
 {
     using SafeMath for uint;
 
-    uint constant YIELD_PERCENT = 1001000000; //1.001%
+    uint constant YIELD_VALUE = 10 ** 15;
     uint constant YIELD_INTERVAL = 15 seconds;
     uint constant LIKE_VALUE = 1 ether;
     uint constant FEE = 10 ** 17;
@@ -140,31 +140,7 @@ contract LikeChain
             if (_timestamp == 0) _timestamp = block.timestamp;
             uint avg = user.likedTimestamps.div(user.likedCount);
             uint intervalCount = _timestamp.sub(avg).div(YIELD_INTERVAL);
-            uint yield = 0;
-            uint base = 1 ether;
-            uint divisor = 10 ** 9;
-            uint interval = 8;
-            if (intervalCount > 0) {
-                if (intervalCount >= 2) {
-                    yield = base;
-                    for (uint i = 0; i < intervalCount.div(interval); i++) {
-                        yield *= (YIELD_PERCENT ** interval).div(divisor ** (interval - 2));
-                        yield = yield.div(base);
-                    }
-                    uint remainder = intervalCount % interval;
-                    if (remainder >= 2) {
-                        yield *= (YIELD_PERCENT ** remainder).div(divisor ** (remainder - 2));
-                        yield = yield.div(base);
-                    } else if (remainder == 1) {
-                        yield *= YIELD_PERCENT ** remainder * divisor;
-                        yield = yield.div(base);
-                    }
-                } else if (intervalCount == 1) {
-                    yield = YIELD_PERCENT ** intervalCount * divisor;
-                }
-                yield *= user.likedCount;
-                yield -= user.likedCount * base;
-            }
+            uint yield = YIELD_VALUE * intervalCount * user.likedCount;
             return (yield, avg);
         } else {
             return (0, 0);
