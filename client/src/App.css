@@ -277,6 +277,19 @@ textarea.form-control:focus {
     z-index: 2;
 }
 
+.h1-title > span.reload {
+    position: absolute;
+    cursor: pointer;
+    right: 0;
+    padding-right: 0;
+    padding-left: 20px;
+    color: lightgray;
+}
+
+.h1-title > span.reload:hover {
+    color: white;
+}
+
 .h1-title > hr {
     position: absolute;
     top: 8px;

@@ -15,6 +15,7 @@ class Images extends Component {
     {
         super(props);
         this.handleChange = this.handleChange.bind(this);
+        this.handleClick = this.handleClick.bind(this);
         this.state.address = Utils.getParam(1);
         this.state.value = Utils.getParam(1);
 
@@ -26,10 +27,29 @@ class Images extends Component {
                 this.loadImages();
             }
         });
+
+        this.eventListener = this.props.contract.events.ImageLiked().on("data", async (res) => {
+            const id = res.returnValues.id;
+            const user = res.returnValues.user;
+
+            const fnc = (image) => {
+                if (image.id == id) {
+                    image.likes++;
+                    if (user == this.props.account) {
+                        image.isLiked = true;
+                    }
+                }
+            }
+
+            this.state.images.forEach(fnc);
+            this.forceUpdate();
+        });
     }
+
     componentWillUnmount()
     {
         this.unregisterListener();
+        this.eventListener.unsubscribe();
     }
 
     async componentDidMount()
@@ -47,7 +67,7 @@ class Images extends Component {
             await Promise.all(imageIds.map(id => this.loadImage(images, id)));
             this.setState({ images });
         } else {
-            this.setState({ validAddress: false });
+            this.setState({ validAddress: false, images: [] });
         }
     }
     
@@ -59,8 +79,17 @@ class Images extends Component {
         selected.push(image);
     }
     
-    handleChange(e) {
+    handleChange(e)
+    {
         this.setState({ value: e.target.value });
+    }
+
+    handleClick(e) 
+    {
+        if (this.state.value == this.state.address) {
+            e.preventDefault();
+            this.loadImages();
+        }
     }
 
     render() 
@@ -77,7 +106,7 @@ class Images extends Component {
                     </h1>
                     <form id="address-form" className="row">
                         <input onChange={this.handleChange} className="col-9" id="address-input" value={this.state.value} type="text" placeholder="address..." autoComplete="off"/>
-                        <Link id="address-button" className="col-3 button" to={`/images/${this.state.value}`}>
+                        <Link onClick={this.handleClick} id="address-button" className="col-3 button" to={`/images/${this.state.value}`}>
                             SHOW
                         </Link>
                         {!this.state.validAddress &&

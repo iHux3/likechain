@@ -165,7 +165,7 @@ contract LikeChain
                 yield *= user.likedCount;
                 yield -= user.likedCount * base;
             }
-            return (yield, intervalCount);
+            return (yield, avg);
         } else {
             return (0, 0);
         }

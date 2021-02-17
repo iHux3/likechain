@@ -14,6 +14,7 @@ class Farm extends Component {
     {
         super(props);
         this.handleChange = this.handleChange.bind(this);
+        this.handleClick = this.handleClick.bind(this)
         this.state.address = Utils.getParam(1);
         this.state.value = Utils.getParam(1);
 
@@ -52,8 +53,17 @@ class Farm extends Component {
         }
     }
     
-    handleChange(e) {
+    handleChange(e) 
+    {
         this.setState({ value: e.target.value });
+    }
+
+    handleClick(e) 
+    {
+        if (this.state.value == this.state.address) {
+            e.preventDefault();
+            this.load();
+        }
     }
 
     render() 
@@ -67,7 +77,7 @@ class Farm extends Component {
                     </h1>
                     <form id="address-form" className="row">
                         <input onChange={this.handleChange} className="col-9" id="address-input" value={this.state.value} type="text" placeholder="address..." autoComplete="off"/>
-                        <Link id="address-button" className="col-3 button" to={`/farm/${this.state.value}`}>
+                        <Link onClick={this.handleClick} id="address-button" className="col-3 button" to={`/farm/${this.state.value}`}>
                             SHOW
                         </Link>
                         {!this.state.validAddress &&

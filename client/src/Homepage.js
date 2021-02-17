@@ -13,6 +13,15 @@ class Homepage extends Component {
         }
     }
 
+    constructor(props)  
+    {
+        super(props);
+        this.getRecentlyLiked = this.getRecentlyLiked.bind(this);
+        this.getRecentlyAdded = this.getRecentlyAdded.bind(this);
+        this.getTopImages = this.getTopImages.bind(this);
+        this.getRandomImages = this.getRandomImages.bind(this);
+    }
+
     async componentDidMount() 
     {
         await Promise.all([
@@ -22,9 +31,34 @@ class Homepage extends Component {
             this.getRandomImages()
         ]);
         this.setState({ loaded: true });
+
+        this.eventListener = this.props.contract.events.ImageLiked().on("data", async (res) => {
+            const id = res.returnValues.id;
+            const user = res.returnValues.user;
+
+            const fnc = (image) => {
+                if (image.id == id) {
+                    image.likes++;
+                    if (user == this.props.account) {
+                        image.isLiked = true;
+                    }
+                }
+            }
+
+            this.state.images.recentlyLiked.forEach(fnc);
+            this.state.images.recentlyAdded.forEach(fnc);
+            this.state.images.mostLiked.forEach(fnc);
+            this.state.images.random.forEach(fnc);
+            this.forceUpdate();
+        });
     }
 
-    async getRecentlyLiked()
+    componentWillUnmount()
+    {
+        this.eventListener.unsubscribe();
+    }
+
+    async getRecentlyLiked(update = false)
     {
         const _images = await  this.props.contract.methods.getRecentlyLiked().call();
         const images = _images ? [..._images] : [];
@@ -36,9 +70,10 @@ class Homepage extends Component {
             selectedIds.push(id);
         }
         await this.loadImages(selectedIds, "recentlyLiked");
+        if (update) this.forceUpdate();
     }
 
-    async getRecentlyAdded()
+    async getRecentlyAdded(update = false)
     {
         const imagesTotal = await  this.props.contract.methods.imageId().call();
         const selectedIds = [];
@@ -47,9 +82,10 @@ class Homepage extends Component {
             selectedIds.push(id);
         }  
         await this.loadImages(selectedIds, "recentlyAdded");
+        if (update) this.forceUpdate();
     }
 
-    async getTopImages()
+    async getTopImages(update = false)
     {
         const _images = await this.props.contract.methods.getTopImages().call();
         const images = _images ? [..._images] : [];
@@ -61,9 +97,10 @@ class Homepage extends Component {
             selectedIds.push(id);
         }
         await this.loadImages(selectedIds, "mostLiked");
+        if (update) this.forceUpdate();
     }
 
-    async getRandomImages()
+    async getRandomImages(update = false)
     {
         const imagesTotal = await  this.props.contract.methods.imageId().call();
         const selectedIds = [];
@@ -84,6 +121,7 @@ class Homepage extends Component {
             }
         }
         await this.loadImages(selectedIds, "random");
+        if (update) this.forceUpdate();
     }
 
     async loadImage(selected, id)
@@ -111,13 +149,13 @@ class Homepage extends Component {
             return (
                 <div id="homepage" className="container main">
                     <Category images={this.state.images.recentlyLiked} text={"RECENTLY LIKED"} contract={this.props.contract} 
-                        token={this.props.token} account={this.props.account} />
+                        token={this.props.token} account={this.props.account} update={this.getRecentlyLiked}/>
                     <Category images={this.state.images.recentlyAdded} text={"RECENTLY ADDED"} contract={this.props.contract} 
-                        token={this.props.token} account={this.props.account} />
+                        token={this.props.token} account={this.props.account} update={this.getRecentlyAdded}/>
                     <Category images={this.state.images.mostLiked} text={"MOST LIKED"} contract={this.props.contract} 
-                        token={this.props.token} account={this.props.account}/>
+                        token={this.props.token} account={this.props.account} update={this.getTopImages}/>
                     <Category images={this.state.images.random} text={"RANDOM"} contract={this.props.contract} 
-                        token={this.props.token} account={this.props.account}/>
+                        token={this.props.token} account={this.props.account} update={this.getRandomImages}/>
                 </div>
             );
         }
