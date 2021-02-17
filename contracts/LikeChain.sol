@@ -154,10 +154,11 @@ contract LikeChain
                     uint remainder = intervalCount % interval;
                     if (remainder >= 2) {
                         yield *= (YIELD_PERCENT ** remainder).div(divisor ** (remainder - 2));
+                        yield = yield.div(base);
                     } else if (remainder == 1) {
                         yield *= YIELD_PERCENT ** remainder * divisor;
+                        yield = yield.div(base);
                     }
-                    yield = yield.div(base);
                 } else if (intervalCount == 1) {
                     yield = YIELD_PERCENT ** intervalCount * divisor;
                 }

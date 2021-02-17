@@ -44,9 +44,8 @@ class Farm extends Component {
             this.setState({ validAddress: true });
             const user = await this.props.contract.methods.users(address).call();
             this.state.data.totalLikes = user.likedCount;
-            const res = await this.props.contract.methods.calculateYield(address, Date.now() / 1000).call();
-            console.log(res)
-            this.state.data.yield = res[0];
+            const res = await this.props.contract.methods.calculateYield(address, Math.round(Date.now() / 1000)).call();
+            this.state.data.yield = res[0].toString();
             this.forceUpdate();
         } else {
             this.setState({ validAddress: false });

@@ -42,7 +42,31 @@ contract(LikeChain, (accounts) => {
         await likeImage(1, accounts[2]);
     });
 
-    it('liking the same image by same sender fails', async() => {
+    /*it('test', async() => {
+        const likeChain = await LikeChain.deployed();
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+        await sleep(15);
+        console.log((await likeChain.calculateYield(accounts[0], Math.round(Date.now() / 1000)))[0].toString());
+    });*/
+
+    /*it('liking the same image by same sender fails', async() => {
         const likeToken = await LikeToken.deployed();
         const likeChain = await LikeChain.deployed();
         const value = web3.utils.toWei('1', 'ether');
@@ -66,7 +90,7 @@ contract(LikeChain, (accounts) => {
 
     it('withdrawing yield after 10 intervals (testing 15s instead of 1 day)', async() => {
         await testWithdrawal(accounts, 10, '22090240420504420');
-    });
+    });*/
 });
 
 async function uploadImage(imageId, account) {
