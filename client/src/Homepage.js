@@ -59,10 +59,16 @@ class Homepage extends Component {
         this.eventListener.unsubscribe();
     }
 
+    shuffle(array) {
+        array.sort(() => Math.random() - 0.5);
+      }
+
     async getRecentlyLiked(update = false)
     {
         const rawImages = await this.props.contract.methods.getRecentlyLiked().call();
         const images = Utils.getImages(rawImages);
+        images.sort(() => Math.random() - 0.5);
+        images.splice(0, images.length > 4 ? images.length - 4 : 0);
         this.state.images.recentlyLiked = images;
         if (update) this.forceUpdate();
     }
@@ -85,6 +91,8 @@ class Homepage extends Component {
     {
         const rawImages = await this.props.contract.methods.getTopImages().call();
         const images = Utils.getImages(rawImages);
+        images.sort(() => Math.random() - 0.5);
+        images.splice(0, images.length > 4 ? images.length - 4 : 0);
         this.state.images.mostLiked = images;
         if (update) this.forceUpdate();
     }
