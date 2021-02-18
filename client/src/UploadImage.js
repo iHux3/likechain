@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import $ from "jquery";
 
 import ipfsClient from "ipfs-http-client";
-const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'http' });
+const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' });
 
 class UploadImage extends Component {
     state = {
