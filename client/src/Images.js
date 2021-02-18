@@ -62,7 +62,7 @@ class Images extends Component {
         const isAddress = this.props.web3.utils.isAddress(this.state.address);
         if (isAddress) {
             this.setState({ validAddress: true });
-            const rawImages = await this.props.contract.methods.getUserImages(this.state.address).call();
+            const rawImages = await this.props.contract.methods.getUserImages(this.state.address).call({ from: this.props.account });
             const images = Utils.getImages(rawImages);
             this.setState({ images });
         } else {

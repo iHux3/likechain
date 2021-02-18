@@ -45,15 +45,11 @@ class App extends Component {
         }
 
         window.ethereum.on("accountsChanged", accounts => {
-            this.setState({ account: accounts[0] });
+            window.location.reload();
         });
 
         window.ethereum.on("networkChanged", network => {
-            const deployedNetwork = LikeChain.networks[network];
-            const deployedNetworkToken = LikeToken.networks[network];
-            const contract = new this.state.web3.eth.Contract(LikeChain.abi, deployedNetwork && deployedNetwork.address);
-            const token = new this.state.web3.eth.Contract(LikeToken.abi, deployedNetworkToken && deployedNetworkToken.address);
-            this.setState({ network, contract, token });
+            window.location.reload();
         });
     }
 

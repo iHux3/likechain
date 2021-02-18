@@ -65,7 +65,7 @@ class Homepage extends Component {
 
     async getRecentlyLiked(update = false)
     {
-        const rawImages = await this.props.contract.methods.getRecentlyLiked().call();
+        const rawImages = await this.props.contract.methods.getRecentlyLiked().call({ from: this.props.account });
         const images = Utils.getImages(rawImages);
         images.sort(() => Math.random() - 0.5);
         images.splice(0, images.length > 4 ? images.length - 4 : 0);
@@ -81,7 +81,7 @@ class Homepage extends Component {
             const id = i - 1;
             selectedIds.push(id);
         }  
-        const rawImages = await this.props.contract.methods.getImages(selectedIds).call();
+        const rawImages = await this.props.contract.methods.getImages(selectedIds).call({ from: this.props.account });
         const images = Utils.getImages(rawImages);
         this.state.images.recentlyAdded = images;
         if (update) this.forceUpdate();
@@ -89,7 +89,7 @@ class Homepage extends Component {
 
     async getTopImages(update = false)
     {
-        const rawImages = await this.props.contract.methods.getTopImages().call();
+        const rawImages = await this.props.contract.methods.getTopImages().call({ from: this.props.account });
         const images = Utils.getImages(rawImages);
         images.sort(() => Math.random() - 0.5);
         images.splice(0, images.length > 4 ? images.length - 4 : 0);
@@ -117,7 +117,7 @@ class Homepage extends Component {
                 selectedIds.push(id);
             }
         }
-        const rawImages = await this.props.contract.methods.getImages(selectedIds).call();
+        const rawImages = await this.props.contract.methods.getImages(selectedIds).call({ from: this.props.account });
         const images = Utils.getImages(rawImages);
         this.state.images.random = images;
         if (update) this.forceUpdate();

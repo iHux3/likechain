@@ -4,6 +4,7 @@ import { Link }  from "react-router-dom";
 class Image extends Component {
     state = {
         processing: false,
+        approving: false
     }
 
     constructor(props) {
@@ -16,11 +17,13 @@ class Image extends Component {
         if (e.currentTarget.className === "enabled" && !this.state.processing) {
             this.setState({ processing: true });
             try {
+                this.setState({ approving: true });
                 await this.props.token.methods.approve(this.props.contract._address, (10 ** 18).toString()).send({ from: this.props.account });
+                this.setState({ approving: false });
                 await this.props.contract.methods.likeImage(this.props.data.id).send({ from: this.props.account });
             } catch (e) {
             }
-            this.setState({ processing: false });
+            this.setState({ processing: false, approving: false });
         }
     }
 
@@ -38,12 +41,22 @@ class Image extends Component {
                         </div>
                     </div>
                     <div className="image-info-right">
-                        <span className={!data.isLiked ? "enabled" : "disabled"} onClick={this.likeImage}>
+                        <span className={(!data.isLiked ? "enabled" : "disabled") + (this.state.processing ? " processing" : "")} onClick={this.likeImage}>
                             &#10084;
                         </span>
                         <span className="likes">
                             {data.likes}
                         </span>
+                        {this.state.approving &&
+                            <span className="status">
+                                approving...
+                            </span>
+                        }
+                        {this.state.processing && !this.state.approving &&
+                            <span className="status">
+                                processing...
+                            </span>
+                        }
                     </div>
                     <div className="image-info-author">
                         author: 
