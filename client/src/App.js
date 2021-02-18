@@ -75,7 +75,7 @@ class App extends Component {
                     :
                         <div className="error-page"> 
                             {this.state.account ? 
-                                <h2> PLEASE CHOOSE THE CORRECT NETWORK IN YOUR METAMASK WALLET </h2>
+                                <h2> PLEASE CHOOSE THE CORRECT NETWORK (ROPSTEN) IN YOUR METAMASK WALLET </h2>
                             :
                                 <div>
                                     <h2>
