@@ -17,8 +17,8 @@ contract LikeChain
     uint public imageId;
 
     LikeToken likeToken;
-    mapping(address => User) public users;
-    mapping(uint => Image) public images;
+    mapping(address => User) users;
+    mapping(uint => Image) images;
 
     uint topImagesMinimum;
     uint currentRecentlyLiked;
@@ -26,8 +26,8 @@ contract LikeChain
     uint[] recentlyLiked;
 
     struct User {
-        uint likedTimestamps;
-        uint likedCount;
+        uint224 likedTimestamps;
+        uint32 likedCount;
         uint[] images;
         mapping(uint => bool) liked;
     }
@@ -79,7 +79,7 @@ contract LikeChain
 
         users[msg.sender].liked[_imageId] = true;
         users[msg.sender].likedCount++;
-        users[msg.sender].likedTimestamps += block.timestamp;
+        users[msg.sender].likedTimestamps += uint224(block.timestamp);
         images[_imageId].likes++;
         
         _updateTopImages(_imageId);
@@ -95,7 +95,7 @@ contract LikeChain
 
         User storage user = users[msg.sender];
         uint remainder = block.timestamp.sub(avg) % YIELD_INTERVAL;
-        user.likedTimestamps = user.likedCount * (block.timestamp - remainder);
+        user.likedTimestamps = uint224(user.likedCount * (block.timestamp - remainder));
         likeToken.mint(msg.sender, yield);
     }
 
@@ -139,7 +139,7 @@ contract LikeChain
         User storage user = users[_user];
         if (user.likedCount > 0) {
             if (_timestamp == 0) _timestamp = block.timestamp;
-            uint avg = user.likedTimestamps.div(user.likedCount);
+            uint avg = uint(user.likedTimestamps).div(user.likedCount);
             uint intervalCount = _timestamp.sub(avg).div(YIELD_INTERVAL);
             uint yield = YIELD_VALUE * intervalCount * user.likedCount;
             return (yield, avg);
